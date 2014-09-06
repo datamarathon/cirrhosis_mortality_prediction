@@ -1,3 +1,4 @@
+create table tmp_chirr_cohort as
 select distinct id.icustay_id
 from mimic2v26.icustay_detail id
 join mimic2v26.icd9 cirrh on cirrh.hadm_id = id.hadm_id and cirrh.code in ('571.2','571.5','571.6')
