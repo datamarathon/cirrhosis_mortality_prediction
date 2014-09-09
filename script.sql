@@ -267,7 +267,12 @@ from (
 ) v
 group by v.icustay_id;
 
-select * from tmp_chirr_vent
+create table tmp_chirr_bmi(
+	icustay_id integer,
+	bmi double precision
+);
+
+COPY tmp_chirr_bmi FROM '/home/bgadeyne/Documents/MIMIC2/obesity.csv' WITH DELIMITER ',' NULL '';
 
 select 
 case when id.gender = 'F' then 1 else 0 end as gender,
@@ -310,6 +315,7 @@ case when sofadelta3_1 is null then 0 else  sofadelta3_1 end as  sofadelta3_1,
 case when vent.ventday1 is null then 0 else vent.ventday1 end as ventday1,
 case when vent.ventday2 is null then 0 else vent.ventday2 end as ventday2,
 case when vent.ventday3 is null then 0 else vent.ventday3 end as ventday3,
+bmi.bmi,
 case when id.icustay_expire_flg = 'Y' then 1 else 0 end as died
 from mimic2v26.icustay_detail id
 join tmp_first_inr inr on inr.icustay_id = id.icustay_id
@@ -320,6 +326,7 @@ join tmp_first_bili bili on bili.icustay_id = id.icustay_id
 join tmp_first_creat creat on creat.icustay_id = id.icustay_id
 join tmp_chirr_dayvalues dv on dv.icustay_id = id.icustay_id
 left join tmp_chirr_vent vent on vent.icustay_id = id.icustay_id
+left join tmp_chirr_bmi bmi on bmi.icustay_id = id.icustay_id
 where id.icustay_id in (
 	select *
 	from tmp_chirr_cohort
